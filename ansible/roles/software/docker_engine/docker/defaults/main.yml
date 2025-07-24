@@ -1,0 +1,17 @@
+---
+docker_version: latest
+docker_cli_version: "{{ docker_version }}"
+docker_containerd_version: "{{ docker_version }}"
+
+docker_default_host:
+
+docker_insecure_registries:
+  - "uk-artifactory.wargaming.net"
+docker_registry_mirrors: []
+
+docker_log_driver: "json-file"
+
+# Linux options
+docker_cgroup_driver: systemd
+docker_daemon_graph: "/var/lib/docker"
+docker_orphan_clean_up: false

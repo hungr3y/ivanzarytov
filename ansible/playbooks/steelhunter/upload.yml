@@ -1,0 +1,79 @@
+---
+- name: Upload artifacts
+  hosts: "all"
+  connection: local
+  gather_facts: false
+  vars:
+    artifactory_url: "https://test-artifactory.net:443/artifactory"
+    artifactory_user: "artifactory_user"
+    artifactory_password: "{{ lookup('hashi_vault', 'secret=secret/artifactory_user:password') }}"
+
+    server_version_major: "{{ versions_server | regex_replace('^([0-9]+(\\.[0-9]+)).*', '\\1') }}"
+    server_feature: "{{ versions_server | regex_replace('^([0-9]+\\.){3}[0-9]+(-[0-9]+)?-?(.*)?-(.*)', '\\3') }}"
+    artifactory_server_path: "builds/server/{{ server_version_major }}/{{ server_feature }}"
+
+    backend_version_major: "{{ versions_backend | regex_replace('^([0-9]+(\\.[0-9]+)).*', '\\1') }}"
+    backend_feature: "{{ versions_backend | regex_replace('^([0-9]+\\.){3}[0-9]+(-[0-9]+)?-?(.*)?-(.*)', '\\3') }}"
+    artifactory_backend_path: "builds/backend/{{ backend_version_major }}/{{ backend_feature }}"
+
+    gameparams_version_major: "{{ versions_gameparams | regex_replace('^([0-9]+(\\.[0-9]+)).*', '\\1') }}"
+    gameparams_feature: "{{ versions_gameparams | regex_replace('^([0-9]+\\.){3}[0-9]+(-[0-9]+)?-?(.*)?-(.*)', '\\3') }}"
+
+  tasks:
+    - name: Set facts
+      set_fact:
+        upload_files:
+          # server
+          - artifactory_file_path: "{{ artifactory_server_path }}"
+            file_path: "server"
+            file_name: "{{ project_name }}_Server_{{ server_config }}_Linux_{{ versions_server }}.json"
+          - artifactory_file_path: "{{ artifactory_server_path }}"
+            file_path: "server"
+            file_name: "{{ project_name }}_Server_{{ server_config }}_Linux_{{ versions_server }}.production.zip"
+          - artifactory_file_path: "{{ artifactory_server_path }}"
+            file_path: "server"
+            file_name: "{{ project_name }}_Server_{{ server_config }}_Linux_{{ versions_server }}.production.7z"
+          - artifactory_file_path: "{{ artifactory_server_path }}"
+            file_path: "server"
+            file_name: "{{ project_name }}_Server_{{ server_config }}_Linux_{{ versions_server }}.tar.gz"
+          - artifactory_file_path: "{{ artifactory_server_path }}"
+            file_path: "server"
+            file_name: "{{ project_name }}_Server_{{ server_config }}_Linux_{{ versions_server }}.debug.zip"
+          #backend
+          - artifactory_file_path: "{{ artifactory_backend_path }}"
+            file_path: "backend"
+            file_name: "{{ project_name }}_backend_{{ versions_backend }}.gsm.zip"
+          - artifactory_file_path: "{{ artifactory_backend_path }}"
+            file_path: "backend"
+            file_name: "{{ project_name }}_backend_{{ versions_backend }}.json"
+          - artifactory_file_path: "{{ artifactory_backend_path }}"
+            file_path: "backend"
+            file_name: "{{ project_name }}_backend_{{ versions_backend }}.zip"
+          - artifactory_file_path: "{{ artifactory_backend_path }}"
+            file_path: "backend"
+            file_name: "{{ project_name }}_backend_{{ versions_backend }}.tools.zip"
+          # game params
+          - artifactory_file_path: "builds/gameparams/{{ gameparams_version_major }}/{{ gameparams_feature }}/"
+            file_path: "gameparams"
+            file_name: "{{ project_name }}_GameParams_Development_{{ versions_gameparams }}.zip"
+          # deploy scripts
+          - artifactory_file_path: "builds/aws/deploy_scripts"
+            file_path: "deploy-scripts"
+            file_name: "deploy_scripts_{{ versions_deploy_scripts }}.zip"
+
+    - name: Upload artifacts
+      include_role:
+        name: main/maintenance/upload_to_s3
+      loop: "{{ upload_files }}"
+      loop_control:
+        label: "{{ item.file_name }}"
+      vars:
+        artifactory_file_path: "{{ item.artifactory_file_path | regex_replace('([^:])/+', '\\1/', '//1/') }}"
+        file_path: "{{ item.file_path }}"
+        file_name: "{{ item.file_name }}"
+
+    - name: Upload image to ecr
+      include_role:
+        name: main/maintenance/upload_to_ecr
+      vars:
+        image_tag: "{{ versions_backend }}"

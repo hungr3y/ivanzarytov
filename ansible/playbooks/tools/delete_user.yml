@@ -1,0 +1,23 @@
+---
+- hosts: elasticsearch
+  gather_facts: true
+  become: true
+  vars:
+    delete_users:
+      - elasticsearch
+    delete_groups:
+      - elasticsearch
+  tasks:
+    - name: "Ensure {{ item }} user not exists"
+      become: true
+      ansible.builtin.user:
+        name: "{{ item }}"
+        state: absent
+      loop: "{{ delete_users }}"
+
+    - name: "Ensure {{ item }} group not exists"
+      become: true
+      ansible.builtin.group:
+        name: "{{ item }}"
+        state: absent
+      loop: "{{ delete_groups }}"

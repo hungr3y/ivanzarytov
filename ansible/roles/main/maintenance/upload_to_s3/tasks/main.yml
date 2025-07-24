@@ -1,0 +1,88 @@
+- name: Create temp directory if it does not exist
+  ansible.builtin.file:
+    path: "{{ temp_dir }}"
+    state: directory
+    mode: '0744'
+
+- name: Set file name
+  set_fact:
+    file: "{{ file_name }}"
+
+- name: Check if file exists on Artifactory
+  ansible.builtin.uri:
+    url: "{{ artifactory_url }}/{{ artifactory_file_path }}/{{ file }}"
+    url_username: '{{ artifactory_user }}'
+    url_password: '{{ artifactory_password }}'
+    validate_certs: false
+    force_basic_auth: true
+    force: true
+    return_content: no
+  ignore_errors: true
+  no_log: true
+  register: file_check_result
+  delegate_to: localhost
+  run_once: true
+
+- name: Report not existed files
+  when: file_check_result.status != 200 and file_check_new_name.status != 200
+  debug:
+    msg: 'File does not exist: {{ file }}'
+
+- name: 'Processing file: {{ file }}'
+  when: file_check_result.status == 200 or file_check_new_name.status == 200
+  block:
+    - name: Check if file exists locally
+      ansible.builtin.stat:
+        path: "{{ temp_dir }}/{{ file }}"
+      register: file_check
+      delegate_to: localhost
+      run_once: true
+
+    - name: 'Download {{ file }} from Artifactory to localhost'
+      when: file_check.stat.exists == false
+      ansible.builtin.get_url:
+        url: "{{ artifactory_url }}/{{ artifactory_file_path }}/{{ file }}"
+        dest: "{{ temp_dir }}/{{ file }}"
+        username: "{{ artifactory_user }}"
+        password: "{{ artifactory_password }}"
+        mode: '0644'
+        validate_certs: false
+      register: __artifact_downloaded
+      delegate_to: localhost
+      run_once: true
+
+    - name: 'Upload {{ file }} to S3'
+      amazon.aws.s3_object:
+        bucket: "{{ s3_bucket }}"
+        object: "{{ s3_file_path }}/{{ file }}"
+        src: "{{ temp_dir }}/{{ file }}"
+        mode: put
+      delegate_to: localhost
+      run_once: true
+
+    - name: 'Get main bucket object information'
+      amazon.aws.s3_object_info:
+        bucket_name : "{{ s3_bucket }}"
+        object_name: "{{ s3_file_path }}/{{ file }}"
+      register: s3_bucket_object
+      delegate_to: localhost
+      run_once: true
+
+    - name: 'Get copy bucket object information'
+      amazon.aws.s3_object_info:
+        bucket_name : "{{ s3_bucket_copy }}"
+        object_name: "{{ s3_file_path }}/{{ file }}"
+      register: s3_bucket_copy_object
+      ignore_errors: true
+      no_log: true
+      delegate_to: localhost
+      run_once: true
+
+    - name: 'Copy {{ file }} to S3'
+      when: >
+        s3_bucket_copy_object.object.etag is not defined or
+        (s3_bucket_copy_object.object.etag is defined and
+        s3_bucket_copy_object.object.etag != s3_bucket_object.object.etag)
+      ansible.builtin.shell: aws s3 cp s3://{{ s3_bucket }}/{{ s3_file_path }}/{{ file }} "s3://{{ s3_bucket_copy }}/{{ s3_file_path }}/{{ file }}"
+      delegate_to: localhost
+      run_once: true

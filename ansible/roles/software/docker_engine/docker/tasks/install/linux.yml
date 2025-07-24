@@ -1,0 +1,104 @@
+---
+- name: "install | Ensure docker repo is setup | Debian"
+  when: ansible_pkg_mgr == 'apt'
+  become: true
+  block:
+    - name: "install : ensure docker-ce repository public key is installed"
+      apt_key:
+        id: "{{ item }}"
+        url: "{{ docker_repo_key_info.url }}"
+        state: present
+      register: keyserver_task_result
+      until: keyserver_task_result is succeeded
+      retries: 4
+      delay: "{{ retry_stagger | d(3) }}"
+      with_items: "{{ docker_repo_key_info.repo_keys }}"
+    - name: "install : ensure docker-ce repository is enabled"
+      apt_repository:
+        repo: "{{ item }}"
+        filename: docker
+        state: present
+      with_items: "{{ docker_repo_info.repos }}"
+
+- name: "install : Ensure docker repo is setup | RedHat"
+  when:
+    - ansible_pkg_mgr in ['dnf', 'yum']
+    - ansible_distribution != "Amazon"
+  become: true
+  block:
+    - name: "install : configure docker repository on RedHat/CentOS"
+      template:
+        src: "repo/redhat_docker.repo.j2"
+        dest: "{{ docker_repo_dir }}/docker.repo"
+        mode: 0755
+      changed_when: false
+
+- name: "install : Ensure docker config is setup"
+  become: true
+  ansible.builtin.copy:
+    content: "{{ lookup('template', 'templates/daemon.json.j2') | to_nice_json }}"
+    dest: "{{ docker_etc_dir }}/daemon.json"
+    mode: 0644
+  changed_when: false
+
+- name: 'Remove dpkg hold | Debian'
+  become: true
+  when: ansible_pkg_mgr == 'apt'
+  dpkg_selections:
+    name: "{{ item }}"
+    selection: install
+  changed_when: false
+  with_items:
+    - containerd
+    - docker-ce
+    - docker-ce-cli
+
+- name: 'install : Ensure docker packages are installed'
+  when:
+    - docker_package_info.pkgs | length > 0
+  become: true
+  package:
+    name: "{{ docker_package_info.pkgs }}"
+    state: "{{ docker_package_info.state | default('present') }}"
+  module_defaults:
+    apt:
+      update_cache: true
+    dnf:
+      update_cache: true
+      enablerepo: "{{ docker_package_info.enablerepo | default(omit) }}"
+    yum:
+      update_cache: true
+      enablerepo: "{{ docker_package_info.enablerepo | default(omit) }}"
+  register: docker_task_result
+  until: docker_task_result is succeeded
+  retries: 1
+  delay: "{{ retry_stagger | d(3) }}"
+  notify: restart docker | linux
+
+- name: 'install : Ensure docker started, remove our config if docker start failed and try again'
+  block:
+    - name: 'install : ensure service is started if docker packages are already present'
+      become: true
+      ansible.builtin.service:
+        name: docker
+        state: started
+      when: docker_task_result is not changed
+  rescue:
+    - debug:
+        msg: "Docker start failed. Try to remove our config"
+
+- name: "install : Ensure docker host setup"
+  become: true
+  ansible.builtin.lineinfile:
+    dest: "/etc/profile.d/docker.sh"
+    state: present
+    create: true
+    regexp: "{{ item.key }}="
+    line: "export {{ item.key }}={{ item.value }}"
+  loop:
+    - key: DOCKER_HOST
+      value: "{{ docker_default_host | default('unix:///var/run/docker.sock', true) }}"
+
+# Configure Docker service
+- name: 'install : setup docker systemd config'
+  include_tasks: configure/systemd.yml

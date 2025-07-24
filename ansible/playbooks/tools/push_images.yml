@@ -1,0 +1,66 @@
+---
+- hosts: localhost
+  gather_facts: true
+  connection: local
+  vars:
+    local_mirror: "uk-artifactory.wargaming.net"
+    aws_mirror: "516777194603.dkr.ecr.eu-central-1.amazonaws.com"
+  tasks:
+    - name: "Get AWS pass for docker"
+      shell: aws ecr get-login-password --region eu-central-1
+      register: aws_pass
+    - name: "Log into AWS private registry"
+      community.docker.docker_login:
+        registry_url: "{{ aws_mirror }}"
+        username: AWS
+        password: "{{ aws_pass.stdout }}"
+        reauthorize: true
+
+    - name: "Push to AWS private registry"
+      community.docker.docker_image:
+        name: "{{ item.src }}"
+        repository: "{{ item.dst }}"
+        push: true
+        source: pull
+        force_source: true
+        force_tag: true
+      loop:
+        # Metrics
+        - src: "{{ local_mirror }}/docker-quay-remote/prometheus/alertmanager:v0.28.0"
+          dst: "{{ aws_mirror }}/docker/tools/alertmanager:v0.28.0"
+        - src: "{{ local_mirror }}/docker/tools/bots/alert_bot:0.2.0"
+          dst: "{{ aws_mirror }}/docker/tools/alertbot:0.2.0"
+        - src: "{{ local_mirror }}/docker/tools/prometheus:v2.33.4"
+          dst: "{{ aws_mirror }}/docker/tools/prometheus:v2.33.4"
+        - src: "{{ local_mirror }}/docker/tools/prometheus-config-reloader:v0.52.0"
+          dst: "{{ aws_mirror }}/docker/tools/prometheus-config-reloader:v0.52.0"
+        - src: "{{ local_mirror }}/docker/tools/grafana:9.1.0"
+          dst: "{{ aws_mirror }}/docker/tools/grafana:9.1.0"
+        - src: "{{ local_mirror }}/docker/tools/backup/sqlite-backup:1.0.1"
+          dst: "{{ aws_mirror }}/docker/tools/sqlite-backup:1.0.1"
+
+        # Logs
+        - src: "{{ local_mirror }}/docker/tools/elasticsearch-custom:7.15.2"
+          dst: "{{ aws_mirror }}/docker/tools/elasticsearch-custom:7.15.2"
+        - src: "{{ local_mirror }}/docker/tools/elasticsearch:7.15.2"
+          dst: "{{ aws_mirror }}/docker/tools/elasticsearch:7.15.2"
+        - src: "{{ local_mirror }}/docker/tools/logstash:7.15.2"
+          dst: "{{ aws_mirror }}/docker/tools/logstash:7.15.2"
+        - src: "{{ local_mirror }}/docker/tools/kibana:7.15.2"
+          dst: "{{ aws_mirror }}/docker/tools/kibana:7.15.2"
+
+        - src: "{{ local_mirror }}/docker/tools/elasticsearch-exporter:v1.7.0"
+          dst: "{{ aws_mirror }}/docker/tools/elasticsearch-exporter:v1.7.0"
+
+        - src: "{{ local_mirror }}/docker/tools/kminion:v2.2.1"
+          dst: "{{ aws_mirror }}/docker/tools/kminion:v2.2.1"
+        - src: "{{ local_mirror }}/docker/tools/kafka-exporter:v1.7.0"
+          dst: "{{ aws_mirror }}/docker/tools/kafka-exporter:v1.7.0"
+
+        - src: "{{ local_mirror }}/docker/tools/redis:7.2-rc"
+          dst: "{{ aws_mirror }}/docker/tools/redis:7.2-rc"
+
+        - src: "{{ local_mirror }}/docker/tools/node-exporter:v1.8.2"
+          dst: "{{ aws_mirror }}/docker/tools/node-exporter:v1.8.2"
+        - src: "{{ local_mirror }}/docker/tools/cadvisor:v0.39.3"
+          dst: "{{ aws_mirror }}/docker/tools/cadvisor:v0.39.3"

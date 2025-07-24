@@ -1,0 +1,24 @@
+---
+
+vcpu_config_map:
+  '4':
+    total_weight: 3
+    compose_file: ["server-backend-gameservermanager.yml"]
+  '8':
+    total_weight: 3
+    compose_file: ["server-backend-gameservermanager-x2.yml"]
+  '16':
+    total_weight: 5
+    compose_file: ["server-backend-gameservermanager.yml", "server-backend-gameservermanager-x2.yml"]
+  '32':
+    total_weight: 5
+    compose_file: ["server-backend-gameservermanager.yml", "server-backend-gameservermanager-x2.yml", "server-backend-gameservermanager-x3-a.yml"]
+  '64':
+    total_weight: 10
+    compose_file: ["server-backend-gameservermanager.yml", "server-backend-gameservermanager-x2.yml", "server-backend-gameservermanager-x3-a.yml"]
+  '96':
+    total_weight: 10
+    compose_file: ["server-backend-gameservermanager.yml", "server-backend-gameservermanager-x2.yml", "server-backend-gameservermanager-x3-a.yml", "server-backend-gameservermanager-x3-b.yml"]
+  'default':
+    total_weight: 3
+    compose_file: ["server-backend-gameservermanager.yml"]

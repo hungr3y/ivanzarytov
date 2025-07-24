@@ -1,0 +1,12 @@
+development:
+  children:
+    development-frankfurt-gameserver:
+      hosts:
+        gs_01:
+          ansible_host: "192.168.100.11"
+        gs_02:
+          ansible_host: "192.168.100.12"
+        gs_03:
+          ansible_host: "192.168.100.13"
+      vars:
+        region: "EU"

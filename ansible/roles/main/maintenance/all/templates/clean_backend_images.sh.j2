@@ -1,0 +1,16 @@
+#!/bin/bash
+
+source .env
+
+BACKEND_VERSION_DEPLOY={{ versions_backend }}
+BACKEND_REPOSITORY=${AWS_ECR_BACKEND}/docker/backend
+
+echo "Starting backend images cleanup"
+docker images --format {% raw %}'{{.Repository}} {{.Tag}} {{.ID}}'{% endraw %} | while read -r repository tag id; do
+  if [[ "$repository" == "${BACKEND_REPOSITORY}" && "$repository:$tag" != "${BACKEND_REPOSITORY}:${BACKEND_VERSION_DEPLOY}" ]]; then
+    echo "removing backend image: $tag"
+    docker image remove -f $id || exit 1
+  else
+    continue
+  fi
+done

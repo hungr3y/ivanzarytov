@@ -1,0 +1,83 @@
+{
+    "LoginServiceSettings": {
+        "Provider": "{{ login_provider }}"
+    },
+    "WargamingNetworkSettings": {
+        "ConnectionParameters": {
+            "BaseUrl": "{{ wgn_api_url }}",
+            "GameApiKey": "{{ wgn_api_key }}",
+            "Version": "v7"
+        },
+        "PerRegionConnectionParameters": {},
+        "PerRegionGameName": {
+            "ru": "{{ title }}",
+            "eu": "{{ title }}",
+            "na": "{{ title }}",
+            "asia": "{{ title }}"
+        },
+        "EventNamePathPrefix": "{{ title }}.{{ title }}."
+    },
+    "EntitlementsSettings": {
+        "Mode": "PlatformInventory",
+        "PlatformImport": {
+            "Title": "{{ title }}",
+            {%- if login_provider == "single" -%}
+            "Environment": "{{ entitlements_environment }}"
+            {%- else -%}
+            "Environment": "unpie"
+            {%- endif -%}
+        }
+    },
+    "ChatServiceSettings": {
+        "XmppSettings": {
+            "AuthToken": "{{ xmpp_token }}",
+            "MucApiServerAddress": "{{ xmpp_muc_api_server_address }}",
+            "Title": "{{ title }}"
+        }
+    },
+    "BackyardServiceSettings": {
+        "ApplicationBaseUrl": "${BACKYARD_BASE_URL:https://{{ prefix }}.backyard.wgtest.net}",
+        "OAuth2": {
+            "RegistrationId": "otp",
+            "ClientName": "{{ backyard_client_name }}",
+            "ClientId": "{{ backyard_client_id }}",
+            "ClientSecret": "{{ backyard_client_secret }}",
+            "RedirectUri": "{{ backyard_redirect_url }}",
+            "AuthorizationUri": "https://{{ backyard_authorization_url }}/adfs/oauth2/authorize",
+            "TokenUri": "https://{{ backyard_authorization_url }}/adfs/oauth2/token"
+        }
+    },
+    "TracingSettings": {
+        "Enabled": true,
+        "Environment": "{{ prefix }}"
+    },
+    {%- if login_provider == "single" -%}
+    "ClientStaticSettings": {
+        "ClientXmppSettings": {
+            "XmppServerURL": "{{ xmpp_server_url }}",
+            "XmppDomain": "{{ xmpp_domain }}",
+            "ServerPort": {{ xmpp_server_port }},
+            "ProjectName": "{{ title }}",
+            "TestChannelName": "",
+            "LoginTimeout": 15
+        }
+    },
+    {%- endif -%}
+    "OttlaIntegrationServiceSettings": {
+        "TitleCodes": [
+            "eu.all",
+            "eu.{{ title }}",
+            "{{ title }}"
+        ],
+        "BanSettings": {
+            "TriggeredGames": [
+                "all",
+                "{{ title }}"
+            ],
+            "TriggeredProjects": [
+                "all",
+                "game"
+            ]
+        }
+    }
+}

@@ -1,0 +1,310 @@
+{
+    "GameInfo": {
+        "ServerAlias": "${SERVER_ALIAS}",
+        "ServerAddress": "${SERVER_ADDRESS}",
+        "RequiredGameVersion": {
+            "Binaries": "${SERVER_VERSION}",
+            "Protocol": "${PROTOCOL_VERSION}"
+        }
+    },
+    "GameServerManagerSettings": {
+        "StartupMaxTime": 180,
+        "LifeAfterRegistrationMaxTime": 3600,
+        "RunningInstancesMaxWeight": "${DS_COUNT:2}",
+        "DefaultMapWeight": 1,
+        "CustomMapWeights": {
+            "/Game/Maps/Tutorial_Island/Tutorial_Island": "${TUTORIAL_WEIGHT:0.5}",
+            "/Game/Maps/WC_TerraMagna/TerraMagnaSFB": "${SFB_WEIGHT:0.5}"
+        },
+        "ListenHostUrl": "${GSM_IP}:${GSM_PORT}",
+        "Regions": "${REGION}",
+        "Tag": "${SERVER_ALIAS}"
+    },
+    "DedicatedServerSettings": {
+        "ExecutablePath": "../server/${PROJECT_NAME}Server.sh",
+        "ExternalHost": "${SERVER_ADDRESS}",
+        "ProjectFile": null,
+        "AdditionalArgs": "${DS_ARGS}",
+        "StartPort": "${DS_START_PORT}",
+        "QueryPort": "${DS_QUERY_PORT}"
+    },
+    "CustomGameLobbySettings": {
+        "ArenaSettings": {
+            "RewardType": "Custom",
+            "EnvironmentType": "Custom",
+            "MatchmakerModeId": "Custom"
+        }
+    },
+    "GameParamsSettings": {
+        "Version": "${GAMEPARAMS_VERSION:0.0.0.0-dev-00000000}",
+        "BundlesPaths": [
+            "../gameparams/generated/",
+            "../gameparams/${GAMEPARAMS_METAGAME_BUNDLE}/"
+        ],
+        "HttpURL": "http://gameparams_server:5080/"
+    },
+    "LoginServiceSettings": {
+        "Provider": {},
+        "KickedUserCacheExpireSeconds": 300,
+        "LoginQueueMaxSize": 250,
+        "LoginBatchSize": 75,
+        "EvictedSessionTtlSeconds": 604800000,
+        "WhitelistingEnabled": false,
+        "ForbiddenRestrictionTypes": [
+            "access_denied"
+        ]
+    },
+    "DatabaseSettings": {
+        "Host": "${POSTGRES_HOST}",
+        "Port": "${POSTGRES_PORT}",
+        "Database": "${POSTGRES_DB}",
+        "Username": "${POSTGRES_USER}",
+        "Password": "${POSTGRES_PASSWORD}",
+        "ConnectionTimeout": 30000,
+        "MaxLifetime": 1800000,
+        "MaximumPoolSize": 30,
+        "EnableLog4Jdbc": false,
+        "AdditionalParams": "sslmode=disable"
+    },
+    "OrmSettings": {
+        "DdlAuto": "validate",
+        "ShowSql": false
+    },
+    "DeduplicationSettings": {
+        "RequestPreserveMinutes": 60
+    },
+    "ClickHouseSettings": {
+        "ConnectionUrl": "jdbc:ch://${CLICKHOUSE_URL}/R3",
+        "Username": "${CLICKHOUSE_USER}",
+        "Password": "${CLICKHOUSE_PASSWORD}",
+        "PoolSize": 8
+    },
+    "ConsulSettings": {
+        "AgentUrl": "${CONSUL_URL}",
+        "AdditionalRegistrationUrls": []
+    },
+    "LobbySettings": {
+        "GatewayForDedicatedServerHostUrl": "${DEDICATED_SERVER_GATEWAY_URL}"
+    },
+    "BattleStarterSettings": {
+        "Implementation": "${BATTLE_STARTER_IMPLEMENTATION:GSM}",
+        "ClientToServerEncryptionPskSettings": {
+            "KeyLengthChars": 32
+        }
+    },
+    "BattleStarterGsmSettings": {
+        "GameServerManagerAddress": "",
+        "GameServerManagerTag": "${SERVER_ALIAS}",
+        "StartGameAttemptsNumber": "${START_GAME_ATTEMPTS_NUMBER}",
+        "DedicatedServerWebClientHelperSettings": {
+            "Scheme": "http",
+            "TotalTimeout": 12000,
+            "RetryAttempts": 3,
+            "RetryRequestDelay": 1000
+        }
+    },
+    "BattleStarterCloudLiftSettings": {
+        "CloudLiftAddress": "cloudlift:8000",
+        "DedicatedServerImageAliasByMap": {
+            "/Game/Maps/WC_TerraMagna/TerraMagna": "terra-magna",
+            "/Game/Maps/Tutorial_Island/Tutorial_Island": "tutorial"
+        },
+        "AllocateContainerAttemptsNumber": 5,
+        "AllocateContainerRetryDelayMillis": 4000
+    },
+    "MonitoringSettings": {
+        "PrometheusExportHostUrl": ":${METRICS_PORT}"
+    },
+    "WargamingNetworkSettings": {
+        "ConnectionParameters": {},
+        "PerRegionConnectionParameters": {},
+        "PerRegionGameName": {},
+        "EventNamePathPrefix": {},
+        "CreateSessionAttemptsNumber": 32,
+        "ShowCreateSessionRequest": false,
+        "AcknowledgeAccountAttemptsNumber": 5
+    },
+    "NotificationServiceSettings": {
+        "MatchmakerLobbyServiceHostUrl": "localhost",
+        "CustomGameLobbyServiceHostUrl": "localhost",
+        "LoginServiceHostUrl": "localhost"
+    },
+    "ClientGatewaySettings": {
+        "ListenAddress": ":${CLIENT_GATEWAY_PORT:6689}",
+        "GatewayNumber": "${GATEWAY_NUMBER:0}",
+        "MaxRegisteredSessions": 6000,
+        "RegisteredPerSecondUsersMax": "${CLIENT_GATEWAY_MAX_NEW_USERS_PER_SECOND:5}",
+        "MaxUsersPerCollection": 100
+    },
+    "UserOnlineStatusSettings": {
+        "IdleTimeoutSeconds": 3600,
+        "DisconnectDelaySeconds": 10
+    },
+    "MessagingSettings": {
+        "KafkaServerAddresses": [
+            "${KAFKA_URL}"
+        ],
+        "DefaultReplyTimeoutMillis": "60000",
+        "MaxReplyTimeoutMillis": "600000",
+        "ReplyPartitions": "${REPLY_PARTITIONS:0}",
+        "GroupIdSuffix": "${GROUP_ID_SUFFIX:}",
+        "GroupPartitionsSubset": "${GROUP_PARTITIONS:}",
+        "MaxTransactionalBatchSize": 100,
+        "PollDurationMillis": 50,
+        "OnNoRecordsSleepDurationMillis": 25,
+        "PauseDelayMillis": 60000,
+        "Parallelism": 256,
+        "HandleRecordsBeforeCommit": 60,
+        "CommitDelayMillis": 5000,
+        "RecordsChannelBufferMaxSize": 8,
+        "RecordsToSkipTimeMillis": 300000
+    },
+    "DedicatedServerGatewaySettings": {
+        "ListenAddress": ":6691",
+        "GatewayNumber": "${GATEWAY_NUMBER:0}"
+    },
+    "MatchmakerSettings": {
+        "MaxMatchesHistorySize": 20
+    },
+    "MatchmakerHttpClientSettings": {
+        "MatchmakerBaseURL": "http://${MATCHMACKER_URL}/",
+        "MatchConsumerCallbackHost": "${MATCHMACKERLOBBY_HOST}"
+    },
+    "BackyardGatewaySettings": {
+        "ListenAddress": ":6601",
+        "GatewayNumber": "${GATEWAY_NUMBER:0}",
+        "MaxUsersPerCollection": 100
+    },
+    "ChatServiceSettings": {
+        "XmppSettings": {
+            "AuthToken": {},
+            "MucApiServerAddress": "",
+            "MucApiCallTimeoutMilliseconds": 10000,
+            "Title": {},
+            "SquadExpireOffsetMilliseconds": 259200000,
+            "BattleExpireOffsetMilliseconds": 3600000
+        },
+        "VivoxSettings": {
+            "SecretKey": "aU7XmfU4eJBdl7L3cdcD4XXQJn6W3ntq",
+            "TokenExpireOffsetMilliseconds": 15000,
+            "Issuer": "wargam5236-st18",
+            "Domain": "mt1p.vivox.com",
+            "ServerAddress": "https://mt1p.www.vivox.com",
+            "AdminUserId": "Wargam5236-St18-Admin",
+            "AdminPassword": "ldJCS9MhsvfH38IU"
+        }
+    },
+    "ClientStaticSettings": {
+        "ClientXmppSettings": {
+            "XmppServerURL": "xmppcs-pie.wgtest.net",
+            "XmppDomain": "pie.loc",
+            "ServerPort": 15222,
+            "ProjectName": "steel01",
+            "TestChannelName": "",
+            "LoginTimeout": 15
+        },
+        "PremiumShopURL": "${PREMIUM_SHOP}",
+        "PatchNotesURL": "${PATCH_NOTES_URL}",
+        "DiscordURL": "${DISCORD_URL}",
+        "URLWhiteList": "${URL_WHITE_LIST}"
+    },
+    "ExternalPlatformApiSettings": {
+            "SteamWebApiSettings": {
+                "ConnectionParameters": {
+                    "BaseUrl": "https://partner.steam-api.com/",
+                    "PublisherApiKey": "${STEAM_PUBLISHER_API_KEY}"
+                },
+                "ApplicationId": "${STEAM_APPLICATION_ID}"
+            },
+            "ExternalAccountIdProvider": "wgn"
+    },
+    "EntitlementsSettings": {
+        "Mode": null,
+        "PlatformInventory": {
+            "OnNoActiveTriggersSleepTimeMillis": 50,
+            "ActiveTriggerBatchLimit": 50,
+            "OnErrorTriggerDelayMillis": 300000
+        },
+        "PlatformImport": {
+            "Url": "http://catool-wgie.ed.wgcrowd.io/",
+            "Key": "7bb8336c8d3402489116b2efcac40f9c"
+        }
+    },
+    "ClansSettings": {
+        "DeletedClansPrunerCron": "0 0 0 ? * *"
+    },
+    "EventSenderSettings": {
+        "RetriesCount": 5,
+        "OnErrorDelayInitialMillis": 5000,
+        "OnErrorDelayMaxMillis": 300000
+    },
+    "TracingSettings": {
+        "Enabled": false,
+        "OtlpEndpoint": "${JAEGER_URL}",
+        "Environment": ""
+    },
+    "RegionSettings": {
+        "DefaultRegion": "EU",
+        "PlatformRegionToMatchRegion": {
+            "": "EU",
+            "eu": "EU",
+            "na": "NA",
+            "asia": "ASIA"
+        },
+        "RegionRelaxationPriorities": {
+            "EU": ["EU", "NA", "ASIA"],
+            "NA": ["NA", "EU", "ASIA"],
+            "ASIA": ["ASIA", "NA", "EU"]
+        }
+    },
+    "InboxSettings": {
+        "DefaultLetterExpirationDelaySeconds": 2592000,
+        "ClearExpiredLettersJobIntervalSeconds": 3600
+    },
+    "RedisSettings": {
+        "UserCacheHost": "",
+        "UserCachePort": 16379,
+        "SessionCacheHost": "",
+        "SessionCachePort": 26379,
+        "BansCacheHost": "",
+        "BansCachePort": 36379,
+        "BattleStateCacheHost": "localhost",
+        "BattleStateCachePort": 46379
+    },
+    "BackyardServiceSettings": {
+        "StaticWebResourcesPath": "${BACKYARD_STATIC_WEB_DIR:../backyard_frontend}",
+        "ApplicationBaseUrl": "",
+        "CORSAllowedOrigins": [
+            "*"
+        ],
+        "OAuth2": {
+            "RegistrationId": "otp",
+            "ClientName": "sh-by-local-name",
+            "ClientId": "pie-sh-backyard-local-code",
+            "ClientSecret": "1c8aeb6ccdd44580948960a9dbccffd5",
+            "RedirectUri": "http://localhost:9347/login/oauth2/code/{registrationId}",
+            "AuthorizationUri": "https://sso.otp.local/adfs/oauth2/authorize",
+            "TokenUri": "https://sso.otp.local/adfs/oauth2/token"
+        }
+    },
+    "OttlaIntegrationServiceSettings": {
+        "TitleCodes": [],
+        "AuthHeaderName": "x-freya-message-hash",
+        "AuthSecret": "zzz_secret_zzz",
+        "BanSettings": {
+            "TriggeredGames": [],
+            "TriggeredProjects": [],
+            "TriggeredBanTypes": [
+                "access_denied"
+            ],
+            "TimeAccuracySeconds": 30,
+            "CreateBanEventType": "CREATE_BAN"
+        }
+    },
+    "ProgressionProfilingLogsSettings": {
+        "EnableDailyQuestsResetLogs": true
+    },
+    "RequestLoggingSettings": {
+        "EnableRequestsLogging": false
+    }
+}

@@ -1,0 +1,29 @@
+{
+    {% if custom_address_pools is defined %}
+    "default-address-pools": [
+        {
+            "base": "{{ custom_address_pools.base }}",
+            "size": {{ custom_address_pools.size }}
+        }
+    ],
+    {% endif %}
+    "data-root": "{{ docker_daemon_graph }}",
+    "exec-opts": [
+      "native.cgroupdriver={{ docker_cgroup_driver }}"
+    ],
+    "experimental": true,
+    {% if docker_insecure_registries is defined %}
+        "insecure-registries": {{ docker_insecure_registries | list | to_nice_json }},
+    {% endif %}
+    {% if docker_registry_mirrors is defined %}
+        "registry-mirrors": {{ docker_registry_mirrors | list }},
+    {% endif %}
+    {% if docker_log_driver == "json-file" %}
+        "log-driver": "json-file",
+        "log-opts": {
+            "max-size": "10m",
+            "max-file": "3"
+        },
+    {% endif %}
+    "metrics-addr": "0.0.0.0:9399"
+}

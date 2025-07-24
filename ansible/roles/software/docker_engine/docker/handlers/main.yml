@@ -1,0 +1,5 @@
+---
+- name: 'restart docker | linux'
+  include_tasks: linux.yml
+  tags:
+    - docker

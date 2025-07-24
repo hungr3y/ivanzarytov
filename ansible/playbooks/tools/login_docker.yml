@@ -1,0 +1,7 @@
+---
+- hosts: all
+  gather_facts: true
+  roles:
+    - role: software/docker_engine/docker_login
+      vars:
+        docker_user: root

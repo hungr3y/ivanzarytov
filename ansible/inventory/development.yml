@@ -1,0 +1,9 @@
+development:
+  children:
+    development-backend:
+      hosts:
+        be_01:  
+          ansible_host: "10.10.0.1"
+      vars:
+        compose_file:
+        - "backend-compose-01.yml"

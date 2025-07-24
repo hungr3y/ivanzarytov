@@ -1,0 +1,44 @@
+---
+- name: "configure : create docker service systemd directory if it doesn't exist"
+  become: true
+  ansible.builtin.file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+
+- name: 'configure : get systemd version'
+  # noqa 303 - systemctl is called intentionally here
+  ansible.builtin.shell: >-
+    set -o pipefail
+    && systemctl --version
+    | head -n 1
+    | cut -d " " -f 2
+  args:
+     executable: /bin/bash
+  register: systemd_version
+  changed_when: false
+
+- name: 'configure : write docker.service systemd file'
+  become: true
+  ansible.builtin.template:
+    src: systemd/docker.service.j2
+    dest: /etc/systemd/system/docker.service
+    mode: 0755
+  register: docker_service_file
+  notify: restart docker | linux
+
+- name: 'configure : copy docker orphan clean up script to the node'
+  when: docker_orphan_clean_up | bool
+  become: true
+  ansible.builtin.copy:
+    src: cleanup-docker-orphans.sh
+    dest: "{{ docker_bin_dir }}/cleanup-docker-orphans.sh"
+    mode: 0755
+
+- name: 'configure | write docker orphan clean up systemd drop-in'
+  when: docker_orphan_clean_up | bool
+  become: true
+  ansible.builtin.template:
+    src: systemd/docker-orphan-cleanup.conf.j2
+    dest: "/etc/systemd/system/docker.service.d/docker-orphan-cleanup.conf"
+    mode: 0755
+  notify: restart docker | linux

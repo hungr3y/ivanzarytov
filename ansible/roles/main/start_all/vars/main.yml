@@ -1,0 +1,25 @@
+---
+interval: 20
+retries: 12
+queries:
+  - "sum(r3_backyardgateway_lifecycle_status{env=\\\"{{ group_names[0] }}\\\", lifecycle_status=\\\"STARTED\\\"}) or on() vector(0)"
+  - "sum(r3_battlestarter_lifecycle_status_value{env=\\\"{{ group_names[0] }}\\\"}) or on() vector(0)"
+  - "sum(r3_chat_lifecycle_status_value{env=\\\"{{ group_names[0] }}\\\"}) or on() vector(0)"
+  - "sum(r3_clansservice_lifecycle_status_value{env=\\\"{{ group_names[0] }}\\\"}) or on() vector(0)"
+  - "sum(r3_clientgatewayservice_lifecycle_status{env=\\\"{{ group_names[0] }}\\\", lifecycle_status=\\\"STARTED\\\"}) or on() vector(0)"
+  - "sum(r3_clientmessagedispatcher_lifecycle_status_value{env=\\\"{{ group_names[0] }}\\\"}) or on() vector(0)"
+  - "sum(r3_customgamelobby_lifecycle_status_value{env=\\\"{{ group_names[0] }}\\\"}) or on() vector(0)"
+  - "sum(r3_dedicatedservergateway_lifecycle_status{env=\\\"{{ group_names[0] }}\\\", lifecycle_status=\\\"STARTED\\\"}) or on() vector(0)"
+  - "sum(r3_entitlementsservice_lifecycle_status_value{env=\\\"{{ group_names[0] }}\\\"}) or on() vector(0)"
+  - "sum(r3_eventssender_lifecycle_status_value{env=\\\"{{ group_names[0] }}\\\"}) or on() vector(0)"
+  - "sum(r3_friendsservice_lifecycle_status_value{env=\\\"{{ group_names[0] }}\\\"}) or on() vector(0)"
+  - "sum(r3_history_lifecycle_status_value{env=\\\"{{ group_names[0] }}\\\"}) or on() vector(0)"
+  - "sum(r3_inbox_lifecycle_status_value{env=\\\"{{ group_names[0] }}\\\"}) or on() vector(0)"
+  - "sum(r3_inventory_lifecycle_status_value{env=\\\"{{ group_names[0] }}\\\"}) or on() vector(0)"
+  - "sum(r3_leaderboard_lifecycle_status_value{env=\\\"{{ group_names[0] }}\\\"}) or on() vector(0)"
+  - "sum(r3_login_lifecycle_status_value{env=\\\"{{ group_names[0] }}\\\"}) or on() vector(0)"
+  - "sum(r3_matchmakerlobby_lifecycle_status_value{env=\\\"{{ group_names[0] }}\\\"}) or on() vector(0)"
+  - "sum(r3_online_lifecycle_status_value{env=\\\"{{ group_names[0] }}\\\"}) or on() vector(0)"
+#  Progression service will be deleted in 0.41. Uncomment the next line if necessary.
+#  - "sum(r3_progression_lifecycle_status{env=\\\"{{ group_names[0] }}\\\"}) or on() vector(0)"
+  - "sum(r3_userprofileservice_lifecycle_status{env=\\\"{{ group_names[0] }}\\\"}) or on() vector(0)"

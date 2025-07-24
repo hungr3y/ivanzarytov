@@ -1,0 +1,41 @@
+[Unit]
+Description=Docker Application Container Engine
+Documentation=http://docs.docker.com
+After=network.target firewalld.service containerd.service
+BindsTo=containerd.service docker.socket
+
+[Service]
+Type=notify
+Environment=GOTRACEBACK=crash
+
+ExecStart={{ docker_bin_dir }}/dockerd -H {{ docker_default_host | default('fd://', true) }} --containerd=/run/containerd/containerd.sock
+ExecReload=/bin/kill -s HUP $MAINPID
+
+TimeoutStartSec=1min
+# restart the docker process if it exits prematurely
+Restart=on-failure
+StartLimitBurst=3
+StartLimitInterval=60s
+{% if docker_mount_flags is defined and docker_mount_flags != "" %}
+MountFlags={{ docker_mount_flags }}
+{% endif %}
+
+# Having non-zero Limit*s causes performance problems due to accounting overhead
+# in the kernel. We recommend using cgroups to do container-local accounting.
+LimitNOFILE=1048576
+LimitNPROC=1048576
+LimitCORE=infinity
+
+{% if systemd_version.stdout | int >= 226 %}
+TasksMax=infinity
+{% endif %}
+
+# set delegate yes so that systemd does not reset the cgroups of docker containers
+Delegate=yes
+
+# kill only the docker process, not all processes in the cgroup
+KillMode=process
+OOMScoreAdjust=-500
+
+[Install]
+WantedBy=multi-user.target

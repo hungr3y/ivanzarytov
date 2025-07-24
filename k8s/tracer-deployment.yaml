@@ -1,0 +1,34 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tracer-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: tracer
+  template:
+    metadata:
+      labels:
+        app: tracer
+        env: test
+        version: privet
+        test: test
+        test2: test2
+        test3: test3
+      annotations:
+        description: "Unreal trace server used for record performance metrics into file"
+    spec:
+      containers:
+        - name: tracer
+          image: busybox:1.37.0-glibc #placeholder
+          ports:
+            - containerPort: 1980
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1.5"
+              memory: "1024Mi"

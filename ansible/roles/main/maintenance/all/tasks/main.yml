@@ -1,0 +1,34 @@
+---
+
+- name: "Copy images cleanup script to the hosts"
+  when: server_type in ["gsm", "be"]
+  ansible.builtin.template:
+    dest: "/home/ec2-user/r3/clean_backend_images.sh"
+    src: templates/clean_backend_images.sh.j2
+    mode: '0754'
+  tags:
+    - clean-images
+    - clean-all
+
+- name: "Clean all backend images on every host"
+  when: server_type in ["gsm", "be"]
+  ansible.builtin.shell:
+  args:
+    cmd: ./clean_backend_images.sh
+    chdir: /home/ec2-user/r3
+  register: backend_images_cleaning
+  tags:
+    - clean-images
+    - clean-all
+
+- name: "Backend images cleaning output"
+  debug:
+    msg: "{{ backend_images_cleaning.stdout_lines }}"
+  when:
+    - backend_images_cleaning.stdout is defined
+    - backend_images_cleaning.stdout | length > 0
+  tags:
+    - clean-images
+    - clean-all
+
+

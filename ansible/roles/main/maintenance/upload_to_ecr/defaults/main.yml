@@ -1,0 +1,5 @@
+artifactory_user: ""
+artifactory_password: ""
+
+artifactory_registry: ""
+aws_registry: ""

@@ -1,0 +1,26 @@
+---
+- name: 'Gather os specific variables'
+  include_vars: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      files:
+        - '{{ ansible_distribution | lower }}.yml'
+        - '{{ ansible_os_family | lower }}.yml'
+        - '{{ ansible_system | lower }}.yml'
+      paths:
+        - vars
+
+- name: 'Ensure JDK are installed'
+  include_tasks: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      files:
+        - '{{ ansible_distribution | lower }}.yml'
+        - '{{ ansible_os_family | lower }}.yml'
+        - '{{ ansible_system | lower }}.yml'
+      paths:
+        - tasks/install
+
+- name: 'Ensure JDK environment setup'
+  when: java_set_env | bool
+  include_tasks: 'environment/{{ ansible_system | lower }}.yml'

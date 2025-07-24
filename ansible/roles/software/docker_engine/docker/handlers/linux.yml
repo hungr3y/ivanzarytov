@@ -1,0 +1,20 @@
+---
+- name: "docker : reload systemd"
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: "docker : reload docker"
+  become: true
+  ansible.builtin.service:
+    name: docker
+    state: restarted
+    enabled: true
+
+- name: "docker : wait for docker"
+  become: true
+  ansible.builtin.command: "{{ docker_bin_dir }}/docker images"
+  register: docker_ready
+  retries: 20
+  delay: 1
+  until: docker_ready.rc == 0

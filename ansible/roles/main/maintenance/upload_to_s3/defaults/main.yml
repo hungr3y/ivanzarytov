@@ -1,0 +1,16 @@
+# Artifactory configuration
+artifactory_url: ""
+artifactory_user: ""
+artifactory_password: ""
+
+# s3 bucket configuration
+s3_bucket: "zip-builds"
+s3_bucket_copy: "zip-builds-asia"
+
+# required parameters
+artifactory_file_path: ""
+s3_file_path: ""
+file: ""
+
+# other
+temp_dir: "{{ lookup('env', 'DEFAULT_LOCAL_TMP') | default('/var/tmp', true) }}"

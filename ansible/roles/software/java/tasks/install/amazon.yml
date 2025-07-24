@@ -1,0 +1,12 @@
+---
+- name: 'install : Ensure java packages are installed'
+  when: java_package_info.pkgs | length > 0
+  become: true
+  package:
+    name: '{{ java_package_info.pkgs }}'
+    state: '{{ java_package_info.state | default("present") }}'
+  module_defaults:
+    apt:
+      update_cache: true
+    dnf:
+      update_cache: true

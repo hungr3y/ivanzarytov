@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: tracer-pod
+  labels:
+    app: tracer2
+    env: stage
+    version: l1
+    test: test
+    test2: test5
+    test3: test7
+    test4: test8
+
+  spec:
+    containers:
+      - name: tracer
+        image: artifactory.wgdp.io/steel-docker/performance/unrealtraceserver:5.3.2-e95b2951
+        ports:
+          - containerPort: 1980

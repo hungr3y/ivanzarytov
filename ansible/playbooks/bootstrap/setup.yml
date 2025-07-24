@@ -1,0 +1,32 @@
+- hosts: all
+  gather_facts: true
+  vars:
+    docker_user: "ec2-user"
+  pre_tasks:
+    - name: 'Install utils'
+      become: true
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - python3-pip
+        - vim
+        - nano
+        - htop
+
+    - name: 'Install python3 packages'
+      become: true
+      ansible.builtin.pip:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - acl
+        - requests
+        - urllib3<2
+
+      
+  roles:
+    - role: software/ssh_keys
+    - role: software/docker_engine/docker
+    - role: software/docker_engine/docker_compose
+    - role: software/docker_engine/docker_login

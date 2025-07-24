@@ -1,0 +1,41 @@
+---
+- name: Log in into artifactory
+  community.docker.docker_login:
+    registry_url: "{{ artifactory_registry }}"
+    username: "{{ artifactory_user }}"
+    password: "{{ artifactory_password }}"
+    reauthorize: true
+  delegate_to: localhost
+  run_once: true
+
+- name: "Log user into AWS private registry"
+  community.docker.docker_login:
+    registry_url: "{{ aws_registry }}"
+    username: AWS
+    password: "{{ lookup('pipe', 'aws ecr get-login-password --region eu-central-1') }}"
+    reauthorize: true
+  delegate_to: localhost
+  run_once: true
+
+- name: Pull image from artifactory
+  community.docker.docker_image_pull:
+    name: "{{ artifactory_registry }}"
+    tag: "{{ image_tag }}"
+    pull: "not_present"
+  delegate_to: localhost
+  run_once: true
+
+- name: Rename image
+  community.docker.docker_image_tag:
+    name: "{{ artifactory_registry }}"
+    tag: "{{ image_tag }}"
+    repository: "{{ aws_registry }}:{{ image_tag }}"
+  delegate_to: localhost
+  run_once: true
+
+- name: Push image
+  community.docker.docker_image_push:
+    name: "{{ aws_registry }}"
+    tag: "{{ image_tag }}"
+  delegate_to: localhost
+  run_once: true
