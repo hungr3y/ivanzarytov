@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: r3k8s-dev
+  name: k8s-dev
   
 ---
 apiVersion: v1
 kind: ResourceQuota
 metadata:
-  namespace: r3k8s-dev
+  namespace: k8s-dev
   name: dev-quota
 spec:
   hard:

@@ -168,10 +168,11 @@ doc/books/
 # Local .terraform directories
 **/.terraform/*
 
-# .tfstate files
-#*.tfstate
-#*.tfstate.*
-#*tfplan*
+.tfstate files
+*.tfstate
+*.tfstate.*
+*tfplan*
+*.lock*
 
 # Crash log files
 crash.log

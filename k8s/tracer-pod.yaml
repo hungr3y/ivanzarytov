@@ -15,6 +15,6 @@ metadata:
   spec:
     containers:
       - name: tracer
-        image: artifactory.wgdp.io/steel-docker/performance/unrealtraceserver:5.3.2-e95b2951
+        image: busybox:1.37.0-glibc #placeholder
         ports:
           - containerPort: 1980

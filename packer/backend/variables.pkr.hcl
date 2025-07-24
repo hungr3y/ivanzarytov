@@ -38,13 +38,13 @@ variable "copy_regions" {
 
 variable "vpc_id" {
   type        = string
-  default     = "vpc-a0a0a0a0a0a0a0a0a0a0"
+  default     = "vpc-a0a0a0a0a0a0a0a0a0a0" #example
   description = "VPC for AMI creation"
 }
 
 variable "subnet_id" {
   type        = string
-  default     = "subnet-b1b1b1b1b1b1b1b1b"
+  default     = "subnet-b1b1b1b1b1b1b1b1b" #example
   description = "Subnet for AMI creation"
 }
 
