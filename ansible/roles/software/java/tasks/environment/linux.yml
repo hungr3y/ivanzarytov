@@ -1,9 +1,0 @@
----
-- name: 'environment : Set environment for JDK {{ java_version }}'
-  become: true
-  lineinfile:
-    path: '/etc/profile.d/java-{{ java_version }}'
-    regexp: '^JDK_{{ java_version }}'
-    line: 'JDK_{{ java_version }}={{ java_package_info.path }}'
-    create: true
-    state: present

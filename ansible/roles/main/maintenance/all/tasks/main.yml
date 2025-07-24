@@ -3,7 +3,7 @@
 - name: "Copy images cleanup script to the hosts"
   when: server_type in ["gsm", "be"]
   ansible.builtin.template:
-    dest: "/home/ec2-user/r3/clean_backend_images.sh"
+    dest: "/home/ec2-user/clean_backend_images.sh"
     src: templates/clean_backend_images.sh.j2
     mode: '0754'
   tags:
@@ -15,7 +15,7 @@
   ansible.builtin.shell:
   args:
     cmd: ./clean_backend_images.sh
-    chdir: /home/ec2-user/r3
+    chdir: /home/ec2-user/
   register: backend_images_cleaning
   tags:
     - clean-images

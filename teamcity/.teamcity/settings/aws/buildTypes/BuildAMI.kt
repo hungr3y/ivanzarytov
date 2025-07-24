@@ -44,9 +44,9 @@ object BuildAMI : BuildType({
                 VCS_NUM=%build.vcs.number%
                 VCS_SHORT=${'$'}{VCS_NUM:0:8}
                 echo "##teamcity[setParameter name='git.short.hash' value='${'$'}VCS_SHORT']"
-                echo "##teamcity[setParameter name='version' value='R3-AL2023-${'$'}VCS_SHORT']"
-                echo "##teamcity[buildStatus text='{build.status.text}: R3-AL2023-${'$'}VCS_SHORT']"
-                echo "##teamcity[buildNumber '%build.number%: R3-AL2023-${'$'}VCS_SHORT']"
+                echo "##teamcity[setParameter name='version' value='-AL2023-${'$'}VCS_SHORT']"
+                echo "##teamcity[buildStatus text='{build.status.text}: -AL2023-${'$'}VCS_SHORT']"
+                echo "##teamcity[buildNumber '%build.number%: -AL2023-${'$'}VCS_SHORT']"
             """.trimIndent()
         }
         script {
